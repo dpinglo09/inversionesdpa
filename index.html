@@ -471,35 +471,39 @@ function setTab(id,btn){
 
 // Price fetching: CoinGecko for crypto, Yahoo Finance proxy for stocks
 async function refreshPrices(){
+  const FINNHUB_KEY = 'd82jp9pr01qmgc0gdqrgd82jp9pr01qmgc0gdqs0';
   const btn=document.querySelector('button[onclick="refreshPrices()"]');
   const err=document.getElementById('err-bar');
-  btn.disabled=true;btn.textContent='Actualizando...';err.style.display='none';
+  btn.disabled=true; btn.textContent='Actualizando...'; err.style.display='none';
   let updated=[];
+
+  // Crypto via CoinGecko (gratis, sin key)
   try{
-    // Crypto via CoinGecko (free, no API key)
-    const cgRes=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,litecoin&vs_currencies=usd');
-    const cgData=await cgRes.json();
-    if(cgData.bitcoin){prices.BTC=cgData.bitcoin.usd;updated.push('BTC');}
-    if(cgData.ethereum){prices.ETH=cgData.ethereum.usd;updated.push('ETH');}
-    if(cgData.litecoin){prices.LTC=cgData.litecoin.usd;updated.push('LTC');}
-  }catch(e){console.warn('CoinGecko failed',e);}
-  try{
-    // Stocks via Yahoo Finance (through allorigins proxy)
-    const symbols='TSLA,AMZN,AMD,NVDA,SHOP,COIN';
-    const yfUrl=`https://query1.finance.yahoo.com/v7/finance/quote?symbols=${symbols}&fields=regularMarketPrice`;
-    const proxyUrl=`https://api.allorigins.win/raw?url=${encodeURIComponent(yfUrl)}`;
-    const yfRes=await fetch(proxyUrl);
-    const yfData=await yfRes.json();
-    const quotes=yfData?.quoteResponse?.result||[];
-    quotes.forEach(q=>{if(q.regularMarketPrice){prices[q.symbol]=q.regularMarketPrice;updated.push(q.symbol);}});
-  }catch(e){console.warn('Yahoo Finance failed',e);}
-  btn.disabled=false;btn.textContent='↻ Actualizar precios';
+    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,litecoin&vs_currencies=usd');
+    const d=await r.json();
+    if(d.bitcoin){prices.BTC=d.bitcoin.usd; updated.push('BTC');}
+    if(d.ethereum){prices.ETH=d.ethereum.usd; updated.push('ETH');}
+    if(d.litecoin){prices.LTC=d.litecoin.usd; updated.push('LTC');}
+  }catch(e){console.warn('CoinGecko error',e);}
+
+  // Acciones via Finnhub (gratis, con key)
+  const stocks=['TSLA','AMZN','AMD','NVDA','SHOP','COIN'];
+  await Promise.all(stocks.map(async sym=>{
+    try{
+      const r=await fetch(`https://finnhub.io/api/v1/quote?symbol=${sym}&token=${FINNHUB_KEY}`);
+      const d=await r.json();
+      if(d.c && d.c>0){prices[sym]=d.c; updated.push(sym);}
+    }catch(e){console.warn(sym+' error',e);}
+  }));
+
+  btn.disabled=false; btn.textContent='↻ Actualizar precios';
   if(updated.length>0){
-    const now=new Date();
-    document.getElementById('upd-time').textContent='Actualizado: '+now.toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})+' ('+updated.join(', ')+')';
+    document.getElementById('upd-time').textContent=
+      'Actualizado: '+new Date().toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})+
+      ' ('+updated.join(', ')+')';
     updateDashboard();
   } else {
-    err.textContent='No se pudieron obtener precios en este momento. Los precios mostrados son aproximados.';
+    err.textContent='No se pudieron obtener precios. Verifica tu conexión.';
     err.style.display='block';
   }
 }
