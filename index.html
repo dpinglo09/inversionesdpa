@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio Tracker — Daniel Pinglo</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px;color:#1e293b;background:#f1f5f9;min-height:100vh}
+.wrap{max-width:1100px;margin:0 auto;padding:1.25rem 1.5rem 3rem}
+button{background:#f1f5f9;border:.5px solid #cbd5e1;color:#1e293b;padding:5px 12px;border-radius:6px;font-size:11px;cursor:pointer;font-family:inherit}
+button:hover{opacity:.8}
+button:disabled{opacity:.4;cursor:default}
+.hdr{display:flex;align-items:flex-start;justify-content:space-between;padding:.75rem 0 .5rem;border-bottom:.5px solid #e2e8f0;margin-bottom:.75rem}
+.h1{font-size:16px;font-weight:600;color:#0f172a}
+.h2{font-size:10px;color:#94a3b8;margin-top:3px}
+.hright{display:flex;align-items:center;gap:8px}
+.upd{font-size:10px;color:#94a3b8}
+.year-bar{display:flex;align-items:center;gap:8px;margin-bottom:.875rem;flex-wrap:wrap}
+.year-label{font-size:11px;color:#64748b;flex-shrink:0}
+.year-btns{display:flex;flex-wrap:wrap;gap:5px}
+.yb{padding:4px 10px;font-size:10px;border-radius:20px;border:.5px solid #cbd5e1;background:#fff;color:#64748b;cursor:pointer;font-family:inherit}
+.yb:hover{border-color:#94a3b8;color:#1e293b}
+.yb.on{background:#1e293b;color:#fff;border-color:#1e293b}
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:1rem}
+.metric{background:#fff;border-radius:8px;padding:.625rem .875rem;border:.5px solid #e2e8f0}
+.metric-lbl{font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:2px}
+.metric-val{font-size:14px;font-weight:600;color:#0f172a;display:block}
+.metric-sub{font-size:9px;color:#94a3b8;display:block;margin-top:2px}
+.tabs{display:flex;border-bottom:.5px solid #e2e8f0;margin-bottom:1.25rem}
+.tab{padding:7px 16px;border:none;background:none;color:#94a3b8;font-size:12px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;font-weight:500;font-family:inherit}
+.tab.on{color:#0f172a;border-bottom-color:#0f172a}
+.cards4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1rem}
+.card{background:#fff;border-radius:8px;padding:.875rem;border:.5px solid #e2e8f0}
+.card.g{background:#f0fdf4;border-color:#bbf7d0}
+.card.r{background:#fef2f2;border-color:#fecaca}
+.card.i{background:#eff6ff;border-color:#bfdbfe}
+.card.w{background:#fffbeb;border-color:#fde68a}
+.cl{font-size:10px;color:#94a3b8;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.card.g .cl{color:#16a34a}
+.card.r .cl{color:#dc2626}
+.card.i .cl{color:#2563eb}
+.card.w .cl{color:#d97706}
+.cv{font-size:18px;font-weight:600;color:#0f172a}
+.card.g .cv{color:#16a34a}
+.card.r .cv{color:#dc2626}
+.card.i .cv{color:#2563eb}
+.card.w .cv{color:#d97706}
+.cs{font-size:10px;color:#94a3b8;margin-top:3px}
+.two{display:grid;grid-template-columns:1fr 200px;gap:1.25rem;align-items:start;margin-bottom:1.25rem}
+.pie-wrap{background:#fff;border:.5px solid #e2e8f0;border-radius:10px;padding:1rem}
+.pie-title{font-size:12px;font-weight:500;color:#64748b;margin-bottom:.75rem}
+.box{background:#fff;border:.5px solid #e2e8f0;border-radius:10px;overflow:hidden;margin-bottom:1.25rem}
+.box-pad{padding:1rem}
+.box-title{font-size:12px;font-weight:500;color:#64748b;margin-bottom:.875rem}
+table{width:100%;border-collapse:collapse;font-size:11px}
+thead{background:#f8fafc}
+th{padding:7px 8px;text-align:right;font-weight:500;color:#94a3b8;font-size:10px;text-transform:uppercase;letter-spacing:.04em;border-bottom:.5px solid #e2e8f0}
+th.l{text-align:left}
+td{padding:7px 8px;text-align:right;color:#64748b;border-bottom:.5px solid #f1f5f9}
+td.l{text-align:left}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#f8fafc}
+.fn{font-weight:600;color:#0f172a}
+.g{color:#16a34a}
+.r{color:#dc2626}
+.muted{color:#94a3b8}
+.badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:500}
+.bb{background:#dcfce7;color:#16a34a}
+.bs{background:#fee2e2;color:#dc2626}
+.bi{background:#dbeafe;color:#2563eb}
+.rh{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.rh span{font-size:11px;color:#64748b}
+.flt{display:flex;gap:8px;flex-wrap:wrap}
+select{background:#fff;border:.5px solid #cbd5e1;color:#1e293b;padding:4px 8px;border-radius:6px;font-size:11px;font-family:inherit}
+.note{background:#eff6ff;border:.5px solid #bfdbfe;border-radius:8px;padding:.75rem;font-size:11px;color:#2563eb;line-height:1.7;margin-bottom:1rem}
+.note.warn{background:#fffbeb;border-color:#fde68a;color:#92400e}
+.kgrid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:1.25rem}
+.stat{display:flex;justify-content:space-between;padding:5px 0;border-bottom:.5px solid #f1f5f9;font-size:11px}
+.stat:last-child{border-bottom:none}
+.stat-l{color:#64748b}
+.stat-v{font-weight:500}
+.ms{display:flex;gap:10px;padding:8px 0;border-bottom:.5px solid #f1f5f9;font-size:11px;align-items:flex-start}
+.ms:last-child{border-bottom:none}
+.ms-date{color:#94a3b8;flex-shrink:0;width:70px}
+.ms-txt{flex:1;color:#1e293b}
+.hidden{display:none}
+.rpill{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600}
+.rpill.g{background:#dcfce7;color:#16a34a}
+.rpill.r{background:#fee2e2;color:#dc2626}
+.err-bar{background:#fef2f2;border:.5px solid #fecaca;border-radius:8px;padding:.75rem;font-size:11px;color:#dc2626;margin-bottom:.5rem;display:none}
+@media(max-width:768px){.cards4{grid-template-columns:repeat(2,1fr)}.two{grid-template-columns:1fr}.metrics-row{grid-template-columns:repeat(2,1fr)}.kgrid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="hdr">
+  <div>
+    <div class="h1">Portfolio Tracker — Daniel Pinglo</div>
+    <div class="h2" id="hdr-sub">30 pólizas BTG Pactual + crypto · 2012–2026 · Costo base FIFO</div>
+  </div>
+  <div class="hright">
+    <span class="upd" id="upd-time"></span>
+    <button onclick="refreshPrices()">↻ Actualizar precios</button>
+  </div>
+</div>
+
+<div id="err-bar" class="err-bar"></div>
+
+<div class="year-bar">
+  <span class="year-label">Ver al cierre de:</span>
+  <div class="year-btns" id="year-btns"></div>
+</div>
+
+<div class="metrics-row">
+  <div class="metric"><span class="metric-lbl">CAGR portafolio</span><span class="metric-val">6.4%</span><span class="metric-sub">anual 2012–2026</span></div>
+  <div class="metric"><span class="metric-lbl">MOIC global</span><span class="metric-val">2.24x</span><span class="metric-sub">capital × retorno total</span></div>
+  <div class="metric"><span class="metric-lbl">Años activo</span><span class="metric-val">13 años</span><span class="metric-sub">Jun 2012 → May 2026</span></div>
+  <div class="metric"><span class="metric-lbl">Alpha vs S&P 500</span><span class="metric-val" style="color:#dc2626">−6.1%/año</span><span class="metric-sub">S&P ~12.5% · tú ~6.4%</span></div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="setTab('dashboard',this)">Dashboard</button>
+  <button class="tab" onclick="setTab('historial',this)">Historial (30)</button>
+  <button class="tab" onclick="setTab('dividendos',this)">Dividendos (36)</button>
+  <button class="tab" onclick="setTab('kpis',this)">KPIs Históricos</button>
+</div>
+
+<div id="tab-dashboard">
+  <div id="hist-note" class="note warn hidden">📅 Snapshot al cierre del año seleccionado · Precios históricos aproximados</div>
+  <div class="cards4">
+    <div class="card"><div class="cl">Valor portafolio</div><div class="cv" id="c-val">—</div><div class="cs" id="c-val-sub">Acciones + crypto</div></div>
+    <div class="card" id="c2"><div class="cl" id="c2-lbl">P&L no realizado</div><div class="cv" id="c2-val">—</div><div class="cs" id="c2-sub">sobre costo base</div></div>
+    <div class="card g"><div class="cl" id="c3-lbl">P&L realizado + divs</div><div class="cv" id="c3-val">+$67,973</div><div class="cs" id="c3-sub">Ventas cerradas + $1,426 divs</div></div>
+    <div class="card i"><div class="cl" id="c4-lbl">Utilidad neta total</div><div class="cv" id="c4-val">—</div><div class="cs" id="c4-sub">Realizado + no realizado</div></div>
+  </div>
+  <div class="two">
+    <div class="box">
+      <table>
+        <thead><tr>
+          <th class="l">Ticker</th><th>Cant.</th><th>Precio</th><th id="th-cb">Costo/u.</th><th>Valor</th><th id="th-pnl">P&L $</th><th id="th-pct">P&L %</th>
+        </tr></thead>
+        <tbody id="pos-tbody"></tbody>
+      </table>
+    </div>
+    <div class="pie-wrap">
+      <div class="pie-title">Distribución</div>
+      <div id="pie-bars"></div>
+    </div>
+  </div>
+  <div class="box" id="closed-box">
+    <table>
+      <thead><tr><th class="l">Posición cerrada</th><th>Invertido</th><th>Retornado</th><th>Divs.</th><th>P&L neto</th><th class="l">Nota</th></tr></thead>
+      <tbody>
+        <tr><td class="l fn">TSLA (ventas parciales)</td><td>$18,686</td><td>$100,101</td><td>—</td><td class="g">+$81,415</td><td class="l muted">6 ventas 2015–2024</td></tr>
+        <tr><td class="l fn">SAN / STD</td><td>$20,262</td><td>$17,684</td><td class="g">$1,423</td><td class="r">−$1,155</td><td class="l muted">~325 acc por script dividend</td></tr>
+        <tr><td class="l fn">JCP / JCPNQ</td><td>$22,051</td><td>$12,409</td><td>—</td><td class="r">−$9,642</td><td class="l muted">Quiebra mayo 2020</td></tr>
+        <tr><td class="l fn">SSYS</td><td>$3,950</td><td>$274</td><td>—</td><td class="r">−$3,676</td><td class="l muted">−93% en 10 años</td></tr>
+        <tr><td class="l fn">CVERDEC1</td><td>$5,746</td><td>$4,370</td><td>—</td><td class="r">−$1,376</td><td class="l muted">Minera BVL 2013–2015</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="tab-historial" class="hidden">
+  <div class="rh">
+    <div class="flt">
+      <select id="h-year" onchange="renderHistorial()"><option value="all">Todos los años</option></select>
+      <select id="h-ticker" onchange="renderHistorial()"><option value="all">Todos los tickers</option></select>
+      <select id="h-type" onchange="renderHistorial()"><option value="all">Compras y ventas</option><option value="buy">Solo compras</option><option value="sell">Solo ventas</option></select>
+    </div>
+    <span id="h-count">30 operaciones</span>
+  </div>
+  <div class="box">
+    <table>
+      <thead><tr><th class="l">Fecha</th><th class="l">Ticker</th><th>Tipo</th><th>Cant. adj.</th><th>Precio adj.</th><th>Total</th><th class="l">Notas</th></tr></thead>
+      <tbody id="hist-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div id="tab-dividendos" class="hidden">
+  <div class="note"><strong>Total dividendos: $1,426.40</strong> — SAN: $1,423.46 (27 pagos 2012–2021) · NVDA: $2.94 (9 pagos 2024–2026).</div>
+  <div class="rh">
+    <div class="flt"><select id="d-year" onchange="renderDividendos()"><option value="all">Todos los años</option></select></div>
+    <span>Total cobrado: $1,426.40</span>
+  </div>
+  <div class="box">
+    <table>
+      <thead><tr><th class="l">Fecha</th><th>Ticker</th><th>Monto</th><th class="l">Descripción</th></tr></thead>
+      <tbody id="div-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div id="tab-kpis" class="hidden">
+  <div class="box-pad box">
+    <div class="box-title">Rentabilidad al cierre de cada año</div>
+    <div class="note" style="margin-bottom:.875rem;font-size:10px">Valores con precios históricos aproximados de cierre de año. Retorno anual por método Modified Dietz.</div>
+    <table>
+      <thead><tr><th class="l">Año</th><th>Valor portafolio</th><th>Capital neto acum.</th><th>P&L acum.</th><th>Retorno del año</th><th style="width:90px">Barra</th><th class="l">Contexto</th></tr></thead>
+      <tbody id="annual-tbody"></tbody>
+    </table>
+  </div>
+  <div class="kgrid">
+    <div class="box-pad box">
+      <div class="box-title">Resumen completo 2012–2026</div>
+      <div class="stat"><span class="stat-l">Capital acciones</span><span class="stat-v">$110,374</span></div>
+      <div class="stat"><span class="stat-l">Capital crypto</span><span class="stat-v">$3,148</span></div>
+      <div class="stat"><span class="stat-l">Capital total invertido</span><span class="stat-v fn">$113,522</span></div>
+      <div class="stat"><span class="stat-l">Recibido por ventas</span><span class="stat-v g">$134,840</span></div>
+      <div class="stat"><span class="stat-l">Dividendos cobrados</span><span class="stat-v g">$1,426</span></div>
+      <div class="stat"><span class="stat-l">P&L realizado neto</span><span class="stat-v g">+$65,562</span></div>
+      <div class="stat"><span class="stat-l">Utilidad neta total</span><span class="stat-v g">≈ $140,394</span></div>
+      <div class="stat"><span class="stat-l">CAGR portafolio</span><span class="stat-v">~6.4%</span></div>
+      <div class="stat"><span class="stat-l">CAGR S&P 500 mismo período</span><span class="stat-v r">~12.5%</span></div>
+      <div class="stat"><span class="stat-l">Alpha vs S&P</span><span class="stat-v r">−6.1%/año</span></div>
+      <div class="stat"><span class="stat-l">MOIC global</span><span class="stat-v">2.24x</span></div>
+      <div class="stat"><span class="stat-l">Mejor año</span><span class="stat-v g">2020: +186%</span></div>
+      <div class="stat"><span class="stat-l">Peor año</span><span class="stat-v r">2022: −48%</span></div>
+    </div>
+    <div class="box-pad box">
+      <div class="box-title">KPIs por ticker</div>
+      <div class="stat"><span class="stat-l">TSLA costo base</span><span class="stat-v g">$48.82 → +769%</span></div>
+      <div class="stat"><span class="stat-l">NVDA costo base</span><span class="stat-v g">$54.12 → +303%</span></div>
+      <div class="stat"><span class="stat-l">AMD costo base</span><span class="stat-v g">$155.21 → +196%</span></div>
+      <div class="stat"><span class="stat-l">AMZN costo base</span><span class="stat-v g">$150.08 → +80%</span></div>
+      <div class="stat"><span class="stat-l">SHOP costo base</span><span class="stat-v r">$106.01 → −3%</span></div>
+      <div class="stat"><span class="stat-l">COIN costo base</span><span class="stat-v r">$261.03 → −23%</span></div>
+      <div class="stat"><span class="stat-l">BTC costo base</span><span class="stat-v g">$22,586 → +261%</span></div>
+      <div class="stat"><span class="stat-l">ETH costo base</span><span class="stat-v g">$1,868 → +25%</span></div>
+      <div class="stat"><span class="stat-l">LTC costo base</span><span class="stat-v r">$297.62 → −80%</span></div>
+      <div class="stat"><span class="stat-l">TSLA P&L realizado</span><span class="stat-v g">+$81,415</span></div>
+    </div>
+  </div>
+  <div class="box-pad box">
+    <div class="box-title">Decisiones clave</div>
+    <div class="ms"><span class="ms-date">Abr 2015</span><span class="ms-txt">Primera compra TSLA a $204 (adj $13.62) — entrada temprana tesis EV+AI</span><span class="badge bb">Acierto</span></div>
+    <div class="ms"><span class="ms-date">Oct 2021</span><span class="ms-txt">Vende 120 acc adj TSLA a $342 — casi en máximos, recaudando $40,788</span><span class="badge bb">Acierto</span></div>
+    <div class="ms"><span class="ms-date">Ene 2022</span><span class="ms-txt">Vende 60 acc adj TSLA a $380 — all-time high. TSLA cayó 65% ese año.</span><span class="badge bb">Acierto</span></div>
+    <div class="ms"><span class="ms-date">Ene 2024</span><span class="ms-txt">Entra en NVDA a $53.79 adj antes del rally AI — +303% latente</span><span class="badge bb">Acierto</span></div>
+    <div class="ms"><span class="ms-date">Abr 2016</span><span class="ms-txt">Recompra JCP el mismo mes que la vende. Quiebra 2020. Pérdida: $9,642</span><span class="badge bs">Error</span></div>
+    <div class="ms"><span class="ms-date">Jul 2014</span><span class="ms-txt">Compra SSYS a $102 sin criterio de salida. Mantiene 10 años hasta $7.62. −93%</span><span class="badge bs">Error</span></div>
+    <div class="ms"><span class="ms-date">Abr 2022</span><span class="ms-txt">Cierra SAN a $3.36 — precio más bajo de toda su historia con el activo</span><span class="badge bs">Error</span></div>
+  </div>
+</div>
+
+</div><!-- .wrap -->
+
+<script>
+const OPEN=[
+  {ticker:'TSLA',name:'Tesla',shares:120,cb:48.82,type:'stock'},
+  {ticker:'AMZN',name:'Amazon',shares:80,cb:150.08,type:'stock'},
+  {ticker:'AMD',name:'AMD',shares:33,cb:155.21,type:'stock'},
+  {ticker:'NVDA',name:'NVIDIA',shares:50,cb:54.12,type:'stock'},
+  {ticker:'SHOP',name:'Shopify',shares:70,cb:106.01,type:'stock'},
+  {ticker:'COIN',name:'Coinbase',shares:25,cb:261.03,type:'stock'},
+  {ticker:'BTC',name:'Bitcoin',shares:0.058,cb:22465.75,type:'crypto'},
+  {ticker:'ETH',name:'Ethereum',shares:0.929,cb:1868.03,type:'crypto'},
+  {ticker:'LTC',name:'Litecoin',shares:0.336,cb:297.62,type:'crypto'},
+];
+const SEED={TSLA:424,AMZN:270,AMD:460,NVDA:218,SHOP:102.54,COIN:200,BTC:81500,ETH:2330,LTC:58.70};
+const COLORS=['#2563eb','#dc2626','#7c3aed','#16a34a','#d97706','#db2777','#64748b','#475569','#0f766e'];
+const TOTAL_INVESTED=113522;
+
+const SNAPS={
+  '2012':[{t:'SAN',s:1704,p:6.20},{t:'JCP',s:0,p:0}],
+  '2013':[{t:'SAN',s:554,p:9.24},{t:'JCP',s:1060,p:9.85},{t:'CVERDEC1',s:200,p:23.00}],
+  '2014':[{t:'SAN',s:570,p:7.10},{t:'JCP',s:1060,p:8.31},{t:'CVERDEC1',s:200,p:18.00},{t:'SSYS',s:38,p:27.00}],
+  '2015':[{t:'TSLA',s:1065,p:16.00},{t:'SAN',s:1194,p:5.15},{t:'JCP',s:1060,p:7.80},{t:'SSYS',s:38,p:20.00}],
+  '2016':[{t:'TSLA',s:1065,p:14.20},{t:'SAN',s:1418,p:4.90},{t:'JCP',s:1270,p:8.26},{t:'SSYS',s:38,p:17.00}],
+  '2017':[{t:'TSLA',s:405,p:20.73},{t:'SAN',s:1434,p:6.85},{t:'JCP',s:1270,p:3.90},{t:'SSYS',s:38,p:25.00},{t:'BTC',s:0.0456,p:14500},{t:'ETH',s:0.478,p:700},{t:'LTC',s:0.336,p:220}],
+  '2018':[{t:'TSLA',s:405,p:4.47},{t:'SAN',s:1444,p:4.10},{t:'JCP',s:1270,p:1.85},{t:'SSYS',s:38,p:20.00},{t:'BTC',s:0.0456,p:3700},{t:'ETH',s:0.478,p:130},{t:'LTC',s:0.336,p:30}],
+  '2019':[{t:'TSLA',s:405,p:27.87},{t:'SAN',s:1456,p:4.50},{t:'JCP',s:1270,p:0.85},{t:'SSYS',s:38,p:18.00},{t:'BTC',s:0.0456,p:7200},{t:'ETH',s:0.478,p:130},{t:'LTC',s:0.336,p:40}],
+  '2020':[{t:'TSLA',s:300,p:235.00},{t:'AMZN',s:80,p:160.24},{t:'SHOP',s:70,p:129.25},{t:'SSYS',s:38,p:18.00},{t:'BTC',s:0.0456,p:29000},{t:'ETH',s:0.478,p:730},{t:'LTC',s:0.336,p:125}],
+  '2021':[{t:'TSLA',s:180,p:352.00},{t:'AMZN',s:80,p:170.00},{t:'SHOP',s:70,p:139.89},{t:'COIN',s:25,p:251.00},{t:'SSYS',s:38,p:22.00},{t:'BTC',s:0.0456,p:47000},{t:'ETH',s:0.478,p:3700},{t:'LTC',s:0.336,p:150}],
+  '2022':[{t:'TSLA',s:138,p:123.18},{t:'AMZN',s:80,p:84.00},{t:'SHOP',s:70,p:38.02},{t:'COIN',s:25,p:33.84},{t:'SSYS',s:38,p:15.00},{t:'BTC',s:0.0456,p:16500},{t:'ETH',s:0.478,p:1200},{t:'LTC',s:0.336,p:60}],
+  '2023':[{t:'TSLA',s:138,p:248.48},{t:'AMZN',s:80,p:153.42},{t:'SHOP',s:70,p:76.89},{t:'COIN',s:25,p:114.56},{t:'SSYS',s:38,p:12.00},{t:'BTC',s:0.0456,p:42000},{t:'ETH',s:0.478,p:2280},{t:'LTC',s:0.336,p:72}],
+  '2024':[{t:'TSLA',s:120,p:403.84},{t:'AMZN',s:80,p:230.76},{t:'SHOP',s:70,p:91.91},{t:'COIN',s:25,p:252.57},{t:'NVDA',s:50,p:134.43},{t:'AMD',s:33,p:120.50},{t:'BTC',s:0.058,p:93500},{t:'ETH',s:0.929,p:3400},{t:'LTC',s:0.336,p:96}],
+};
+
+const ANNUAL_DATA=[
+  {y:'2012',val:13291,capNeto:12739,ret:3.5,ctx:'Inicio SAN (STD→SAN). Primer año.'},
+  {y:'2013',val:20612,capNeto:18576,ret:5.1,ctx:'SAN sube. JCP estable. CVERDEC1 ok.'},
+  {y:'2014',val:20450,capNeto:22526,ret:-16.7,ctx:'SSYS comprada en peak. SAN cae.'},
+  {y:'2015',val:33811,capNeto:37649,ret:-3.9,ctx:'TSLA entra. SAN y SSYS caen.'},
+  {y:'2016',val:34472,capNeto:37803,ret:1.1,ctx:'JCP rotación. Año casi neutro.'},
+  {y:'2017',val:23459,capNeto:25797,ret:2.9,ctx:'Sell TSLA parcial. JCP se deteriora.'},
+  {y:'2018',val:18605,capNeto:25797,ret:-20.7,ctx:'JCP colapsa. TSLA cae.'},
+  {y:'2019',val:19755,capNeto:25797,ret:6.2,ctx:'TSLA recupera. Solo dividendos SAN.'},
+  {y:'2020',val:97493,capNeto:30771,ret:185.7,ctx:'TSLA ×9. SHOP y AMZN entran.'},
+  {y:'2021',val:101530,capNeto:-3491,ret:36.8,ctx:'Harvest TSLA en máximos. COIN IPO.'},
+  {y:'2022',val:27876,capNeto:-26874,ret:-47.5,ctx:'Crash tech: TSLA −65%, SHOP −73%.'},
+  {y:'2023',val:56930,capNeto:-26874,ret:104.3,ctx:'Rebote masivo AI. TSLA ×2.'},
+  {y:'2024',val:91762,capNeto:-24466,ret:50.1,ctx:'TSLA post-elecciones. NVDA+AMD.'},
+];
+
+const TX=[
+  {date:'2012-06-07',ticker:'SAN',type:'buy',shares:425,price:6.00,total:2583.05,notes:'STD→SAN'},
+  {date:'2012-08-24',ticker:'SAN',type:'sell',shares:425,price:6.80,total:2854.88,notes:''},
+  {date:'2012-09-06',ticker:'SAN',type:'buy',shares:385,price:7.52,total:2935.79,notes:''},
+  {date:'2012-09-27',ticker:'SAN',type:'buy',shares:1319,price:7.58,total:10074.88,notes:''},
+  {date:'2013-01-14',ticker:'SAN',type:'sell',shares:1150,price:8.56,total:9767.69,notes:''},
+  {date:'2013-06-18',ticker:'CVERDEC1',type:'buy',shares:200,price:28.50,total:5745.66,notes:'Minera BVL'},
+  {date:'2013-11-21',ticker:'JCP',type:'buy',shares:1060,price:9.23,total:9859.02,notes:''},
+  {date:'2014-07-16',ticker:'SSYS',type:'buy',shares:38,price:102.86,total:3949.74,notes:''},
+  {date:'2015-04-06',ticker:'TSLA',type:'buy',shares:405,price:13.62,total:5566.01,notes:'Adj ×15 (orig 27@$204.35)'},
+  {date:'2015-07-10',ticker:'SAN',type:'buy',shares:640,price:7.22,total:4668.06,notes:''},
+  {date:'2015-07-10',ticker:'CVERDEC1',type:'sell',shares:200,price:22.00,total:4369.85,notes:'Cierre BVL'},
+  {date:'2015-08-26',ticker:'TSLA',type:'buy',shares:975,price:14.93,total:14657.84,notes:'Adj ×15 (orig 65@$223.94)'},
+  {date:'2015-09-25',ticker:'TSLA',type:'sell',shares:315,price:17.29,total:5399.36,notes:'Adj ×15 (orig 21@$259.41)'},
+  {date:'2016-03-09',ticker:'JCP',type:'sell',shares:1060,price:11.44,total:12037.61,notes:'Ganancia +24%'},
+  {date:'2016-04-21',ticker:'JCP',type:'buy',shares:1270,price:9.53,total:12192.37,notes:'⚠ Recompra mismo mes'},
+  {date:'2017-02-16',ticker:'TSLA',type:'sell',shares:660,price:18.32,total:12005.67,notes:'Adj ×15 (orig 44@$274.75)'},
+  {date:'2017-11-30',ticker:'ETH',type:'buy',shares:0.478,price:435.15,total:208.00,notes:'Coinbase'},
+  {date:'2017-12-07',ticker:'BTC',type:'buy',shares:0.0174,price:17931.00,total:312.00,notes:'Coinbase'},
+  {date:'2017-12-14',ticker:'LTC',type:'buy',shares:0.336,price:297.62,total:100.00,notes:'Coinbase'},
+  {date:'2017-12-22',ticker:'BTC',type:'buy',shares:0.0282,price:14184.40,total:400.00,notes:'Coinbase'},
+  {date:'2020-06-30',ticker:'JCPNQ',type:'sell',shares:1240,price:0.32,total:371.27,notes:'Post-quiebra'},
+  {date:'2020-08-31',ticker:'SHOP',type:'buy',shares:70,price:105.24,total:7420.40,notes:'Adj ×10 (orig 7@$1,052.42)'},
+  {date:'2020-09-14',ticker:'TSLA',type:'sell',shares:105,price:135.00,total:14081.04,notes:'Adj ×3 (orig 35@$405)'},
+  {date:'2020-09-17',ticker:'AMZN',type:'buy',shares:80,price:149.07,total:12006.00,notes:'Adj ×20 (orig 4@$2,981)'},
+  {date:'2021-05-06',ticker:'COIN',type:'buy',shares:25,price:259.10,total:6525.71,notes:''},
+  {date:'2021-10-25',ticker:'TSLA',type:'sell',shares:120,price:342.00,total:40787.65,notes:'Adj ×3. Máximos'},
+  {date:'2022-01-05',ticker:'TSLA',type:'sell',shares:60,price:380.45,total:22682.40,notes:'Adj ×3. All-time high'},
+  {date:'2022-04-12',ticker:'SAN',type:'sell',shares:1519,price:3.36,total:5061.85,notes:'Cierre total SAN'},
+  {date:'2022-10-06',ticker:'TSLA',type:'buy',shares:18,price:240.86,total:4361.20,notes:'Recompra'},
+  {date:'2024-01-09',ticker:'NVDA',type:'buy',shares:50,price:53.79,total:2706.15,notes:'Adj ×10 (orig 5@$537.87)'},
+  {date:'2024-01-11',ticker:'BTC',type:'buy',shares:0.0128,price:46875.00,total:600.00,notes:'Coinbase'},
+  {date:'2024-01-30',ticker:'AMD',type:'buy',shares:15,price:170.91,total:2579.20,notes:''},
+  {date:'2024-07-30',ticker:'AMD',type:'buy',shares:18,price:140.38,total:2542.67,notes:''},
+  {date:'2024-10-18',ticker:'SSYS',type:'sell',shares:38,price:7.62,total:273.59,notes:'⚠ −93% en 10 años'},
+  {date:'2024-11-06',ticker:'TSLA',type:'sell',shares:18,price:287.60,total:5145.97,notes:''},
+  {date:'2024-11-13',ticker:'ETH',type:'buy',shares:0.451,price:3388.29,total:1528.00,notes:'Coinbase'},
+];
+
+const DIVS=[
+  {date:'2012-08-08',ticker:'SAN',amount:60.96},{date:'2012-11-13',ticker:'SAN',amount:4.38},
+  {date:'2013-02-08',ticker:'SAN',amount:3.89},{date:'2013-05-13',ticker:'SAN',amount:4.86},
+  {date:'2013-08-09',ticker:'SAN',amount:101.55},{date:'2014-05-13',ticker:'SAN',amount:6.09},
+  {date:'2014-09-01',ticker:'SAN',amount:3.18},{date:'2014-11-14',ticker:'SAN',amount:4.72},
+  {date:'2015-02-10',ticker:'SAN',amount:4.23},{date:'2015-05-11',ticker:'SAN',amount:1.63},
+  {date:'2015-08-10',ticker:'SAN',amount:58.41},{date:'2015-11-19',ticker:'SAN',amount:3.08},
+  {date:'2016-02-08',ticker:'SAN',amount:58.90},{date:'2016-05-11',ticker:'SAN',amount:62.50},
+  {date:'2016-08-08',ticker:'SAN',amount:66.93},{date:'2017-02-08',ticker:'SAN',amount:58.62},
+  {date:'2017-05-10',ticker:'SAN',amount:67.17},{date:'2017-08-03',ticker:'SAN',amount:140.25},
+  {date:'2017-08-14',ticker:'SAN',amount:82.68},{date:'2018-02-09',ticker:'SAN',amount:83.55},
+  {date:'2018-05-11',ticker:'SAN',amount:80.22},{date:'2018-08-09',ticker:'SAN',amount:84.62},
+  {date:'2019-02-11',ticker:'SAN',amount:83.82},{date:'2019-05-10',ticker:'SAN',amount:75.22},
+  {date:'2019-11-11',ticker:'SAN',amount:120.29},{date:'2021-05-13',ticker:'SAN',amount:44.06},
+  {date:'2021-11-09',ticker:'SAN',amount:57.65},{date:'2024-03-27',ticker:'NVDA',amount:0.14},
+  {date:'2024-07-01',ticker:'NVDA',amount:0.35},{date:'2024-10-03',ticker:'NVDA',amount:0.35},
+  {date:'2025-01-02',ticker:'NVDA',amount:0.35},{date:'2025-05-05',ticker:'NVDA',amount:0.35},
+  {date:'2025-07-03',ticker:'NVDA',amount:0.35},{date:'2025-10-03',ticker:'NVDA',amount:0.35},
+  {date:'2025-12-29',ticker:'NVDA',amount:0.35},{date:'2026-04-06',ticker:'NVDA',amount:0.35},
+];
+
+let prices={...SEED};
+let selectedYear='2026';
+
+const fmt=(n,d=0)=>'$'+Math.abs(n).toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d});
+const fp=(n)=>(n>=0?'+':'')+n.toFixed(1)+'%';
+const sign=(n)=>(n>=0?'+':'-')+'$'+Math.abs(n).toLocaleString('en-US',{maximumFractionDigits:0});
+const fdate=s=>{try{return new Date(s+'T12:00').toLocaleDateString('es-PE',{day:'2-digit',month:'2-digit',year:'numeric'})}catch{return s}};
+
+function initYearBtns(){
+  const c=document.getElementById('year-btns');
+  ['2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023','2024','2026'].forEach(y=>{
+    const b=document.createElement('button');
+    b.className='yb'+(y==='2026'?' on':'');
+    b.textContent=y==='2026'?'2026 (Hoy)':y;
+    b.onclick=()=>{document.querySelectorAll('.yb').forEach(x=>x.classList.remove('on'));b.classList.add('on');selectedYear=y;updateDashboard();};
+    c.appendChild(b);
+  });
+}
+
+function updateDashboard(){
+  const isLive=selectedYear==='2026';
+  document.getElementById('hist-note').classList.toggle('hidden',isLive);
+  document.getElementById('closed-box').classList.toggle('hidden',!isLive);
+  document.getElementById('hdr-sub').textContent=isLive?'30 pólizas BTG Pactual + crypto · 2012–2026 · Costo base FIFO':'Snapshot histórico al 31 de diciembre de '+selectedYear+' · Precios aproximados';
+  if(isLive) renderLive(); else renderHistorical(selectedYear);
+}
+
+function renderLive(){
+  const posM=OPEN.map(p=>{
+    const price=prices[p.ticker]||0;
+    const value=p.shares*price;
+    const cost=p.cb>0?p.shares*p.cb:null;
+    const pnl=cost!=null?value-cost:null;
+    const pct=cost&&cost>0?(value-cost)/cost*100:null;
+    return{...p,price,value,cost,pnl,pct};
+  }).sort((a,b)=>b.value-a.value);
+  const total=posM.reduce((s,p)=>s+p.value,0);
+  const totalCost=posM.filter(p=>p.cost).reduce((s,p)=>s+p.cost,0);
+  const unreal=posM.filter(p=>p.pnl!=null).reduce((s,p)=>s+p.pnl,0);
+  const utilNeta=134840+1426+posM.reduce((s,p)=>s+p.value,0)-TOTAL_INVESTED;
+  setCard1(fmt(total),'Acciones + crypto');
+  setCard2('g','P&L no realizado',sign(unreal),fp(unreal/totalCost*100)+' sobre costo base');
+  setCard3('g','P&L realizado + divs','+$67,973','Ventas cerradas + $1,426 divs');
+  setCard4('i','Utilidad neta total','≈ '+fmt(utilNeta),'Realizado + no realizado');
+  document.getElementById('th-cb').textContent='Costo/u.';
+  document.getElementById('th-pnl').textContent='P&L $';
+  document.getElementById('th-pct').textContent='P&L %';
+  const tbody=document.getElementById('pos-tbody');tbody.innerHTML='';
+  posM.forEach(p=>{tbody.innerHTML+=`<tr><td class="l fn">${p.ticker}</td><td>${p.shares}</td><td>${p.price>0?'$'+p.price.toLocaleString('en-US',{maximumFractionDigits:2}):'—'}</td><td>${p.cb>0?'$'+p.cb.toLocaleString('en-US',{maximumFractionDigits:2}):'—'}</td><td class="fn">${fmt(p.value)}</td><td class="${p.pnl!=null?(p.pnl>=0?'g':'r'):''}">${p.pnl!=null?sign(p.pnl):'—'}</td><td class="${p.pct!=null?(p.pct>=0?'g':'r'):''}">${p.pct!=null?fp(p.pct):'—'}</td></tr>`;});
+  renderPie(posM.map(p=>({ticker:p.ticker,value:p.value})),total);
+}
+
+function renderHistorical(year){
+  const snap=SNAPS[year];const ad=ANNUAL_DATA.find(a=>a.y===year);
+  if(!snap||!ad)return;
+  const posM=snap.filter(p=>p.s>0).map(p=>({...p,value:p.s*p.p})).sort((a,b)=>b.value-a.value);
+  const total=posM.reduce((s,p)=>s+p.value,0);
+  const pnlAcum=ad.val-ad.capNeto;
+  const isPos=ad.ret>=0;
+  setCard1(fmt(ad.val),'Valor al 31 dic '+year);
+  setCard2(isPos?'g':'r','Retorno del año',(isPos?'+':'')+ad.ret.toFixed(1)+'%',ad.ctx.split('.')[0]);
+  setCard3(pnlAcum>=0?'g':'r','P&L acumulado',sign(pnlAcum),'vs capital neto invertido');
+  setCard4('i','Capital neto acum.',ad.capNeto>=0?fmt(ad.capNeto):'+'+fmt(Math.abs(ad.capNeto))+' retirado',ad.capNeto<0?'Recuperaste más de lo que pusiste':'Total puesto hasta '+year);
+  document.getElementById('th-cb').textContent='% portf.';
+  document.getElementById('th-pnl').textContent='Valor';
+  document.getElementById('th-pct').textContent='';
+  const tbody=document.getElementById('pos-tbody');tbody.innerHTML='';
+  posM.forEach(p=>{const pct=(p.value/total*100).toFixed(1);tbody.innerHTML+=`<tr><td class="l fn">${p.t}</td><td>${p.s}</td><td>$${p.p.toLocaleString('en-US',{maximumFractionDigits:2})}</td><td>${pct}%</td><td class="fn">${fmt(p.value)}</td><td class="muted" colspan="2" style="text-align:left;font-size:10px">Precio aprox.</td></tr>`;});
+  renderPie(posM.map(p=>({ticker:p.t,value:p.value})),total);
+}
+
+function setCard1(v,s){document.getElementById('c-val').textContent=v;document.getElementById('c-val-sub').textContent=s;}
+function setCard2(cls,l,v,s){document.getElementById('c2').className='card '+cls;document.getElementById('c2-lbl').textContent=l;document.getElementById('c2-val').textContent=v;document.getElementById('c2-sub').textContent=s;}
+function setCard3(cls,l,v,s){const c=document.querySelector('#tab-dashboard .cards4 .card:nth-child(3)');c.className='card '+cls;document.getElementById('c3-lbl').textContent=l;document.getElementById('c3-val').textContent=v;document.getElementById('c3-sub').textContent=s;}
+function setCard4(cls,l,v,s){const c=document.querySelector('#tab-dashboard .cards4 .card:nth-child(4)');c.className='card '+cls;document.getElementById('c4-lbl').textContent=l;document.getElementById('c4-val').textContent=v;document.getElementById('c4-sub').textContent=s;}
+
+function renderPie(posM,total){
+  const el=document.getElementById('pie-bars');el.innerHTML='';
+  posM.filter(p=>p.value>0).forEach((p,i)=>{
+    const pct=((p.value/total)*100);
+    el.innerHTML+=`<div style="margin-bottom:7px"><div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px"><span style="font-weight:600;color:#0f172a">${p.ticker}</span><span style="color:#64748b">${pct.toFixed(1)}%</span></div><div style="height:5px;background:#f1f5f9;border-radius:3px"><div style="height:100%;width:${pct}%;background:${COLORS[i%COLORS.length]};border-radius:3px"></div></div></div>`;
+  });
+}
+
+function renderAnnualTable(){
+  const maxAbs=Math.max(...ANNUAL_DATA.map(a=>Math.abs(a.ret)));
+  const tbody=document.getElementById('annual-tbody');if(!tbody)return;tbody.innerHTML='';
+  ANNUAL_DATA.forEach(a=>{
+    const isPos=a.ret>=0;const pnl=a.val-a.capNeto;const barW=Math.round(Math.abs(a.ret)/maxAbs*80);
+    tbody.innerHTML+=`<tr><td class="l fn">${a.y}</td><td class="fn">${fmt(a.val)}</td><td class="${a.capNeto>=0?'muted':'g'}">${a.capNeto>=0?fmt(a.capNeto):'+'+fmt(Math.abs(a.capNeto))+' ret.'}</td><td class="${pnl>=0?'g':'r'}">${sign(pnl)}</td><td><span class="rpill ${isPos?'g':'r'}">${(a.ret>=0?'+':'')+a.ret.toFixed(1)}%</span></td><td><div style="height:8px;width:${barW}px;background:${isPos?'#16a34a':'#dc2626'};border-radius:2px;opacity:.7"></div></td><td class="l muted" style="font-size:10px">${a.ctx}</td></tr>`;
+  });
+}
+
+function renderHistorial(){
+  const fy=document.getElementById('h-year').value,ft=document.getElementById('h-ticker').value,ftp=document.getElementById('h-type').value;
+  const f=TX.filter(tx=>{if(fy!=='all'&&tx.date.slice(0,4)!==fy)return false;if(ft!=='all'&&tx.ticker!==ft)return false;if(ftp!=='all'&&tx.type!==ftp)return false;return true;}).sort((a,b)=>b.date.localeCompare(a.date));
+  document.getElementById('h-count').textContent=f.length+' de '+TX.length+' operaciones';
+  const tbody=document.getElementById('hist-tbody');tbody.innerHTML='';
+  f.forEach(tx=>{tbody.innerHTML+=`<tr><td class="l muted">${fdate(tx.date)}</td><td class="l fn">${tx.ticker}</td><td><span class="badge ${tx.type==='buy'?'bb':'bs'}">${tx.type==='buy'?'Compra':'Venta'}</span></td><td>${tx.shares}</td><td>$${tx.price.toLocaleString('en-US',{maximumFractionDigits:2})}</td><td class="fn">${fmt(tx.total)}</td><td class="l muted" style="font-size:10px">${tx.notes}</td></tr>`;});
+}
+
+function renderDividendos(){
+  const fy=document.getElementById('d-year').value;
+  const f=DIVS.filter(d=>fy==='all'||d.date.slice(0,4)===fy).sort((a,b)=>b.date.localeCompare(a.date));
+  const tbody=document.getElementById('div-tbody');tbody.innerHTML='';
+  f.forEach(d=>{tbody.innerHTML+=`<tr><td class="l muted">${fdate(d.date)}</td><td><span class="badge bi">${d.ticker}</span></td><td class="g fn">$${d.amount.toFixed(2)}</td><td class="l muted">Dividendo ${d.ticker}</td></tr>`;});
+}
+
+function setTab(id,btn){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  ['dashboard','historial','dividendos','kpis'].forEach(t=>{document.getElementById('tab-'+t).classList.toggle('hidden',t!==id);});
+}
+
+// Price fetching: CoinGecko for crypto, Yahoo Finance proxy for stocks
+async function refreshPrices(){
+  const FINNHUB_KEY = 'd82jp9pr01qmgc0gdqrgd82jp9pr01qmgc0gdqs0';
+  const btn=document.querySelector('button[onclick="refreshPrices()"]');
+  const err=document.getElementById('err-bar');
+  btn.disabled=true; btn.textContent='Actualizando...'; err.style.display='none';
+  let updated=[];
+
+  // Crypto via CoinGecko (gratis, sin key)
+  try{
+    const r=await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,litecoin&vs_currencies=usd');
+    const d=await r.json();
+    if(d.bitcoin){prices.BTC=d.bitcoin.usd; updated.push('BTC');}
+    if(d.ethereum){prices.ETH=d.ethereum.usd; updated.push('ETH');}
+    if(d.litecoin){prices.LTC=d.litecoin.usd; updated.push('LTC');}
+  }catch(e){console.warn('CoinGecko error',e);}
+
+  // Acciones via Finnhub (gratis, con key)
+  const stocks=['TSLA','AMZN','AMD','NVDA','SHOP','COIN'];
+  await Promise.all(stocks.map(async sym=>{
+    try{
+      const r=await fetch(`https://finnhub.io/api/v1/quote?symbol=${sym}&token=${FINNHUB_KEY}`);
+      const d=await r.json();
+      if(d.c && d.c>0){prices[sym]=d.c; updated.push(sym);}
+    }catch(e){console.warn(sym+' error',e);}
+  }));
+
+  btn.disabled=false; btn.textContent='↻ Actualizar precios';
+  if(updated.length>0){
+    document.getElementById('upd-time').textContent=
+      'Actualizado: '+new Date().toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'})+
+      ' ('+updated.join(', ')+')';
+    updateDashboard();
+  } else {
+    err.textContent='No se pudieron obtener precios. Verifica tu conexión.';
+    err.style.display='block';
+  }
+}
+
+function initSelects(){
+  const years=[...new Set(TX.map(t=>t.date.slice(0,4)))].sort().reverse();
+  const tickers=[...new Set(TX.map(t=>t.ticker))].sort();
+  const hy=document.getElementById('h-year');
+  years.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;hy.appendChild(o);});
+  const ht=document.getElementById('h-ticker');
+  tickers.forEach(t=>{const o=document.createElement('option');o.value=t;o.textContent=t;ht.appendChild(o);});
+  const dyears=[...new Set(DIVS.map(d=>d.date.slice(0,4)))].sort().reverse();
+  const dy=document.getElementById('d-year');
+  dyears.forEach(y=>{const o=document.createElement('option');o.value=y;o.textContent=y;dy.appendChild(o);});
+}
+
+initYearBtns();
+initSelects();
+updateDashboard();
+renderHistorial();
+renderDividendos();
+renderAnnualTable();
+</script>
+</body>
+</html>
